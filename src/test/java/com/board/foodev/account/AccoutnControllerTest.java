@@ -11,12 +11,11 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AccoutnController {
+public class AccoutnControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -28,6 +27,7 @@ public class AccoutnController {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/sign-up"))
+                .andExpect(model().attributeExists("signUpForm"))
         ; //스프링 시큐리티 설정을 하지 않으면 깨진다. - SecurtiyConfig
 
     }
