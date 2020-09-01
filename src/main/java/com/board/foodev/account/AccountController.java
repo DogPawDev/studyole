@@ -1,6 +1,9 @@
 package com.board.foodev.account;
 
+import com.board.foodev.domain.Account;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -18,6 +21,8 @@ public class AccountController {
 
 
     private final SignUpFormValidator signUpFormValidator;
+    private final AccountRepositroy accountRepositroy;
+    private final JavaMailSender javaMailSender;
 
     @InitBinder("signUpForm")
     public void initBinder(WebDataBinder webDataBinder){
@@ -42,7 +47,27 @@ public class AccountController {
             return "account/sign-up";
         }
 
+        Account account = Account.builder()
+                .email(signUpForm.getEmail())
+                .nickname(signUpForm.getNickname())
+                .password(signUpForm.getPassword()) // 해시 인코딩 필요함
+                .studyCreateByWeb(true)
+                .studyUpdateByWeb(true)
+                .build();
 
+        Account newAccount = accountRepositroy.save(account);
+        //회원 저장
+
+
+        //토큰 만들어서 이메일 보내기
+        newAccount.generaateEmailCheckToken();
+
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(newAccount.getEmail());
+        mailMessage.setSubject("스터딛 올래 , 회원가입 인증"); // 제목
+        mailMessage.setText("check-email-token?token="+newAccount.getEmailCheckToken()+"&email="+newAccount.getEmail());//메일 본문
+
+        javaMailSender.send(mailMessage);
 
         return "redirect:/";
     }
