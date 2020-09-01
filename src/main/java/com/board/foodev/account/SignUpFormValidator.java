@@ -8,6 +8,7 @@ import org.springframework.validation.Validator;
 
 
 
+
 @Component
 @RequiredArgsConstructor //private final 선언된 멤버의 생성자를 자동으로 만들어 준다.
 public class SignUpFormValidator implements Validator {

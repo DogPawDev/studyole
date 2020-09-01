@@ -20,6 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/email-login","/check-email-login","/login-link").permitAll()
                 .mvcMatchers(HttpMethod.GET,"/profile/*").permitAll()
                 .anyRequest().authenticated();
+
         //스프링 시큐리티에서 접근을 허용하는 곳
     }
 
