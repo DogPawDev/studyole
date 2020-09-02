@@ -6,6 +6,7 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import javax.validation.Valid;
@@ -18,10 +19,11 @@ public class AccountService {
     private final JavaMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
 
+    @Transactional
     public void processNewAccount(SignUpForm signUpForm) {
 
         Account newAccount = saveNewAccount(signUpForm);
-
+        //트랜젝션 문제 때문에 유지하도록 에오테이션을 넣어줘야 한다.
         newAccount.generaateEmailCheckToken();
 
         sendSignUpConfirmEmail(newAccount);

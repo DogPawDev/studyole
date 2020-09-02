@@ -77,9 +77,9 @@ public class AccoutnControllerTest {
 
         assertNotNull(account);
         assertNotEquals(account.getPassword(),"12345678");
+        assertNotNull(account.getEmailCheckToken());
 
 
-            
             then(javaMailSender).should().send(any(SimpleMailMessage.class));
             //해당 타입에서 센드 호출 됨>?
     }

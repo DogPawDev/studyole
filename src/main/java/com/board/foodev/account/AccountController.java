@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 
 @Controller
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class AccountController {
 
     private final SignUpFormValidator signUpFormValidator;
     private final AccountService accountService;
+    private final AccountRepositroy accountRepositroy;
 
     @InitBinder("signUpForm")
     public void initBinder(WebDataBinder webDataBinder){
@@ -48,6 +50,31 @@ public class AccountController {
         accountService.processNewAccount(signUpForm);
 
         return "redirect:/";
+    }
+
+    @GetMapping("/check-email-token")
+    public String checkEmailToken(String token,String email,Model model){
+        Account account = accountRepositroy.findByEmail(email);
+
+        String viewName = "account/checked-email";
+
+
+        if(account == null){
+            model.addAttribute("error","wrong.email");
+            return viewName;
+        }
+
+        if (!account.getEmailCheckToken().equals(token)){
+            model.addAttribute("error","wrong.token");
+            return viewName;
+        }
+
+        account.setEmailVerified(true);
+        account.setJoinAt(LocalDateTime.now());
+        model.addAttribute("numberOfUser",accountRepositroy.count());
+        model.addAttribute("nickname",account.getNickname());
+        return viewName;
+
     }
 
 
