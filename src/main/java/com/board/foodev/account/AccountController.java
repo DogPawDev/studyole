@@ -26,7 +26,7 @@ public class AccountController {
     @InitBinder("signUpForm")
     public void initBinder(WebDataBinder webDataBinder){
         webDataBinder.addValidators(signUpFormValidator);
-        //signUpForm 객체의 검증을 해주는 부부닝다. signUpSubmit에서 사용되는 SignUpForm 객체의
+        //signUpForm 객체의 검증을 해주는 부부닝다. signUpSubmit에서 메소드 사용되는 SignUpForm 객체의
         // 카멜 케이스로 자동으로 적용이 되기 때문에 이메일, 닉네임 검증이 이부분을 통해 가능해진다.
     }
 

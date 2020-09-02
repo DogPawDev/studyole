@@ -4,6 +4,7 @@ import com.board.foodev.domain.Account;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
@@ -15,6 +16,7 @@ public class AccountService {
 
     private final AccountRepositroy accountRepositroy;
     private final JavaMailSender javaMailSender;
+    private final PasswordEncoder passwordEncoder;
 
     public void processNewAccount(SignUpForm signUpForm) {
 
@@ -29,7 +31,7 @@ public class AccountService {
         Account account = Account.builder()
                 .email(signUpForm.getEmail())
                 .nickname(signUpForm.getNickname())
-                .password(signUpForm.getPassword()) // 해시 인코딩 필요함
+                .password(passwordEncoder.encode(signUpForm.getPassword())) //해시 인코딩 성공
                 .studyCreateByWeb(true)
                 .studyUpdateByWeb(true)
                 .build();

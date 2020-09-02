@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.validation.constraints.AssertTrue;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -68,11 +68,18 @@ public class AccoutnControllerTest {
         mockMvc.perform(post("/sign-up")
                 .param("nickname","foodev")
                 .param("email","foodev@email.com")
-                .param("password","12345123")
+                .param("password","12345678")
                 .with(csrf())) //mock을 통해 사용할 떄는 해당 토큰이 있어야한다.
                 .andExpect(status().is3xxRedirection());
 
-            assertTrue(accountRepositroy.existsByEmail("foodev@email.com"));
+        Account account= accountRepositroy.findByEmail("foodev@email.com");
+
+
+        assertNotNull(account);
+        assertNotEquals(account.getPassword(),"12345678");
+
+
+            
             then(javaMailSender).should().send(any(SimpleMailMessage.class));
             //해당 타입에서 센드 호출 됨>?
     }
