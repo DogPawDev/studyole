@@ -19,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.authenticated;
+import static org.springframework.security.test.web.servlet.response.SecurityMockMvcResultMatchers.unauthenticated;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -44,10 +46,15 @@ public class AccoutnControllerTest {
         mockMvc.perform(get("/check-email-token")
         .param("token","asfsadfsad")
         .param("email","email@email.com"))
+                .andDo(print())
         .andExpect(status().isOk())
         .andExpect(model().attributeExists("error"))
         .andExpect(view().name("account/checked-email"))
+        .andExpect(unauthenticated())
+        //인증된 사용자 인가?
                 ;
+
+        //스프링 시큐리티 의존성을 넣으면 mockmvc에 시큐리티 관련 된 것들이 들어간다.
     }
 
 
@@ -67,12 +74,13 @@ public class AccoutnControllerTest {
                 .param("token",newAccount.getEmailCheckToken())
                 .param("email",newAccount.getEmail())
                 )
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(model().attributeDoesNotExist("error"))
                 .andExpect(model().attributeExists("nickname"))
                 .andExpect(model().attributeExists("numberOfUser"))
                 .andExpect(view().name("account/checked-email"))
-
+                .andExpect(authenticated().withAuthenticationName("foodev"))
         ;
     }
 
@@ -84,6 +92,7 @@ public class AccoutnControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/sign-up"))
                 .andExpect(model().attributeExists("signUpForm"))
+                .andExpect(unauthenticated())
         ; //스프링 시큐리티 설정을 하지 않으면 깨진다. - SecurtiyConfig
 
     }
@@ -97,12 +106,15 @@ public class AccoutnControllerTest {
                 .param("email","emaile..")
                 .param("password","12345")
                 .with(csrf())) //mock을 통해 사용할 떄는 해당 토큰이 있어야한다.
+                .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(view().name("account/sign-up"));
+                .andExpect(view().name("account/sign-up"))
+                .andExpect(unauthenticated())
+                ;
         //스프링 시큐리티에서 CSRF 타 사이트에서 나의 사이트에 이상한 파라미터를 계속 보내는 것을 방지하는 기술이 사용됨.
 
     }
-    @DisplayName("회원 가입 처리 - 입력값 정")
+    @DisplayName("회원 가입 처리 - 입력값 정상")
     @Test
     void signUpSubmit_with_correct_input() throws Exception{
         mockMvc.perform(post("/sign-up")
@@ -110,7 +122,10 @@ public class AccoutnControllerTest {
                 .param("email","foodev@email.com")
                 .param("password","12345678")
                 .with(csrf())) //mock을 통해 사용할 떄는 해당 토큰이 있어야한다.
-                .andExpect(status().is3xxRedirection());
+                .andDo(print())
+                .andExpect(status().is3xxRedirection())
+                .andExpect(authenticated().withAuthenticationName("foodev"))
+        ;
 
         Account account= accountRepositroy.findByEmail("foodev@email.com");
 
