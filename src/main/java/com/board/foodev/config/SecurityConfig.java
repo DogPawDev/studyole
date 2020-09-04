@@ -26,7 +26,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
+        web.ignoring()
+                .mvcMatchers("/node_modules/**")
+                .requestMatchers(PathRequest.toStaticResources().atCommonLocations());//흔히 사용하는 위치만 뺌
         //스태틱 한 것들은 시큐리티 필터를 적용하지 않도록 함
+
+        //node npm 은 흔히 사용하는 패스에 적요이 안되있어서 새로 적용해줘야한다.
+
+
     }
 }
